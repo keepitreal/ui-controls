@@ -1,13 +1,13 @@
-/// <reference path="./lib/platypus.ts" />
+/// <reference path="../lib/platypus/platypus-node.d.ts" />
 
-module todo {
+module controls {
     /// app
     export class App extends plat.App { }
-    plat.register.app('todo', App);
+    plat.register.app('controls', App);
     
     /// viewcontrol
     export class Main extends plat.ui.ViewControl {
-        templateUrl = 'main.viewcontrol.html';
+        templateUrl = 'app/main.viewcontrol.html';
         context = {};
     }
     plat.register.viewControl('main', Main);

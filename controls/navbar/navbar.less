@@ -1,0 +1,44 @@
+@import '../common/variables';
+@import '../common/mixins';
+
+/// =============== Base Styling ===================
+
+.navbar {
+	.flexbox();
+	.align-items(center);
+	position: fixed;
+	left: 0;
+	width: 100%;
+	height: @navbar-height;
+	line-height: @navbar-height;
+	background-color: #bbbbbb;
+	text-align: center;
+}
+
+.navbar.navbar-top {
+	top: 0;
+}
+
+/// ============ Right & Left Actions ==============
+
+.navbar-action {
+	width: 17%;
+	max-width: 6em;
+	float: left;
+	height: 100%;	
+}
+
+.navbar-action.navbar-action-left {
+	background-color: red;
+}
+
+.navbar-action.navbar-action-right {
+	background-color: yellow;
+}
+
+.navbar-title {
+	float: left;
+	flex: 1;
+	background-color: green;
+	height: 100%;
+}

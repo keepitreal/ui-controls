@@ -1,0 +1,18 @@
+{
+  "name": "controls",
+  "version": "0.0.0",
+  "homepage": "https://github.com/Platypi/controls-tutorial",
+  "authors": [
+    "Darion Welch <darion@getplatypi.com>"
+  ],
+  "description": "UI Controls for use with PlatypusTS/UI",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "lib",
+    "test",
+    "tests"
+  ]
+}
