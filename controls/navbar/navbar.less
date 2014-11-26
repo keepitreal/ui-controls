@@ -3,6 +3,12 @@
 
 /// =============== Base Styling ===================
 
+@navbar-action-width: 18%;
+@navbar-action-max-width: 6em;
+@navbar-color: @blue;
+
+/// =============== Base Styling ===================
+
 .navbar {
 	.flexbox();
 	.align-items(center);
@@ -10,7 +16,7 @@
 	width: 100%;
 	height: @navbar-height;
 	line-height: @navbar-height;
-	background-color: @blue;
+	background-color: @navbar-color;
 	text-align: center;
 	color: #ffffff;
 }
@@ -31,11 +37,25 @@
 /// ============ Right & Left Actions ==============
 
 .navbar-action {
-	width: 17%;
-	max-width: 6em;
+	position: relative;
+	width: @navbar-action-width;
+	max-width: @navbar-action-max-width;
 	float: left;
 	height: 100%;
 	cursor: pointer;
+}
+
+.navbar-action:active::after {
+	content: "";
+	position: absolute;
+	top: (@navbar-height - (@navbar-height * 0.8)) / 2;
+	left: 50%;
+	margin-left: -((@navbar-height * 0.8) * 0.5);
+	height: @navbar-height * 0.8;
+	width: @navbar-height * 0.8;
+	border-radius: @navbar-height / 2;
+	background-color: #ffffff;
+	opacity: 0.1;
 }
 
 .navbar-action.navbar-action-left { }
