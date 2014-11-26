@@ -2836,12 +2836,6 @@ declare module plat {
              */
             static all<R>(promises: R[]): IThenable<R[]>;
             /**
-             * Creates a promise that fulfills to the passed in object. If the
-             * passed-in object is a promise it returns the promise.
-             * @param object The object to cast to a Promise.
-             */
-            static cast<R>(object?: R): Promise<R>;
-            /**
              * Returns a promise that fulfills as soon as any of the promises fulfill,
              * or rejects as soon as any of the promises reject (whichever happens first).
              * @param {Array<plat.async.IThenable<R>>} promises An Array of promises to 'race'.
@@ -3084,12 +3078,6 @@ declare module plat {
              * @param {Array<R>} promises An array of objects, if an object is not a promise, it will be cast.
              */
             all<R>(promises: R[]): IThenable<R[]>;
-            /**
-             * Creates a promise that fulfills to the passed in object. If the
-             * passed-in object is a promise it returns the promise.
-             * @param {R} object The object to cast to a Promise.
-             */
-            cast<R>(object?: R): IThenable<R>;
             /**
              * Returns a promise that fulfills as soon as any of the promises fulfill,
              * or rejects as soon as any of the promises reject (whichever happens first).
@@ -4659,6 +4647,10 @@ declare module plat {
              */
             public $EventManagerStatic: IEventManagerStatic;
             /**
+             * Reference to the IContextManagerStatic injectable.
+             */
+            public $ContextManagerStatic: observable.IContextManagerStatic;
+            /**
              * The object that initiated the event.
              */
             public sender: any;
@@ -4670,6 +4662,12 @@ declare module plat {
              * The event direction this object is using for propagation.
              */
             public direction: string;
+            /**
+             * Whether or not preventDefault() was called on the event. Senders of the
+             * event can check this property to know if they should carry out a default
+             * action as a result of the event.
+             */
+            public defaultPrevented: boolean;
             /**
              * Whether or not the event propagation was stopped.
              */
@@ -4703,6 +4701,10 @@ declare module plat {
              */
             public initialize(name: string, sender: any, direction?: string): void;
             /**
+             * Cancels the default action (if there is one) for an event. Does not affect propagation.
+             */
+            public preventDefault(): void;
+            /**
              * Call this method to halt the propagation of an upward-moving event.
              * Downward events cannot be stopped with this method.
              */
@@ -4732,6 +4734,12 @@ declare module plat {
              * The event direction this object is using for propagation.
              */
             direction: string;
+            /**
+             * Whether or not preventDefault() was called on the event. Senders of the
+             * event can check this property to know if they should carry out a default
+             * action as a result of the event.
+             */
+            defaultPrevented: boolean;
             /**
              * Whether or not the event propagation was stopped.
              */
@@ -4765,6 +4773,10 @@ declare module plat {
              */
             initialize(name: string, sender: any, direction?: string): void;
             /**
+             * Cancels the default action (if there is one) for an event. Does not affect propagation.
+             */
+            preventDefault(): void;
+            /**
              * Call this method to halt the propagation of an upward-moving event.
              * Downward events cannot be stopped with this method.
              */
@@ -4778,28 +4790,14 @@ declare module plat {
              * Creates a new LifecycleEvent and fires it.
              * @param {string} name The name of the event.
              * @param {any} sender The sender of the event.
-             * @param {boolean} cancelable? Whether or not the event can be cancelled.
              */
-            static dispatch(name: string, sender: any, cancelable?: boolean): void;
-            /**
-             * States whether or not this event is able to be cancelled. Some lifecycle events can be
-             * cancelled, preventing the default functionality for the event.
-             */
-            public cancelable: boolean;
-            /**
-             * States whether or not this event has been cancelled.
-             */
-            public cancelled: boolean;
+            static dispatch(name: string, sender: any): void;
             /**
              * Initializes the event, populating its public properties.
              * @param {string} name The name of the event.
              * @param {any} sender The sender of the event.
              */
             public initialize(name: string, sender: any): void;
-            /**
-             * If the event is cancelable, calling this method will cancel the event.
-             */
-            public cancel(): void;
         }
         /**
          * The Type for referencing the '$LifecycleEventStatic' injectable as a dependency.
@@ -4813,33 +4811,19 @@ declare module plat {
              * Creates a new LifecycleEvent and fires it.
              * @param {string} name The name of the event.
              * @param {any} sender The sender of the event.
-             * @param {boolean} cancelable? Whether or not the event can be cancelled.
              */
-            dispatch(name: string, sender: any, cancelable?: boolean): void;
+            dispatch(name: string, sender: any): void;
         }
         /**
          * Represents a Lifecycle Event. Lifecycle Events are always direct events.
          */
         interface ILifecycleEvent extends IDispatchEventInstance {
             /**
-             * States whether or not this event is able to be cancelled. Some lifecycle events can be
-             * cancelled, preventing the default functionality for the event.
-             */
-            cancelable: boolean;
-            /**
-             * States whether or not this event has been cancelled.
-             */
-            cancelled: boolean;
-            /**
              * Initializes the event, populating its public properties.
              * @param {string} name The name of the event.
              * @param {any} sender The sender of the event.
              */
             initialize(name: string, sender: any): void;
-            /**
-             * If the event is cancelable, calling this method will cancel the event.
-             */
-            cancel(): void;
         }
         /**
          * Manages dispatching events, handling all propagating events as well as any error handling.
@@ -5247,15 +5231,6 @@ declare module plat {
              */
             public type: string;
             /**
-             * States whether or not this event is able to be cancelled. Some navigation events can be
-             * cancelled, preventing further navigation.
-             */
-            public cancelable: boolean;
-            /**
-             * States whether or not this event has been cancelled.
-             */
-            public cancelled: boolean;
-            /**
              * Initializes the event members.
              * @param {string} name The name of the event.
              * @param {any} sender The object that initiated the event.
@@ -5263,10 +5238,6 @@ declare module plat {
              */
             public initialize(name: string, sender: any, direction?: 'direct', eventOptions?: INavigationEventOptions<P>): void;
             public initialize(name: string, sender: any, direction?: string, eventOptions?: INavigationEventOptions<P>): void;
-            /**
-             * If the event is cancelable, calling this method will cancel the event.
-             */
-            public cancel(): void;
         }
         /**
          * The Type for referencing the '$NavigationEventStatic' injectable as a dependency.
@@ -5307,15 +5278,6 @@ declare module plat {
              */
             type: string;
             /**
-             * States whether or not this event is able to be cancelled. Some navigation events can be
-             * cancelled, preventing further navigation.
-             */
-            cancelable: boolean;
-            /**
-             * States whether or not this event has been cancelled.
-             */
-            cancelled: boolean;
-            /**
              * Initializes the event members.
              * @param {string} name The name of the event.
              * @param {any} sender The object that initiated the event.
@@ -5323,10 +5285,6 @@ declare module plat {
              */
             initialize(name: string, sender: any, direction?: 'direct', eventOptions?: INavigationEventOptions<P>): void;
             initialize(name: string, sender: any, direction?: string, eventOptions?: INavigationEventOptions<P>): void;
-            /**
-             * If the event is cancelable, calling this method will cancel the event.
-             */
-            cancel(): void;
         }
         /**
          * Describes options for an INavigationEvent. The generic parameter specifies the
@@ -5349,11 +5307,6 @@ declare module plat {
              * Specifies the type of IBaseViewControl for the event.
              */
             type: string;
-            /**
-             * States whether or not this event is able to be cancelled. Some navigation events can be
-             * cancelled, preventing further navigation.
-             */
-            cancelable?: boolean;
         }
         /**
          * Represents an internal Error Event. This is used for any
@@ -9986,6 +9939,16 @@ declare module plat {
                  */
                 public itemsLoaded: async.IThenable<void>;
                 /**
+                 * The options for the foreach control.
+                 */
+                public options: observable.IObservableProperty<IForEachOptions>;
+                /**
+                 * Used to hold the alias tokens for the built-in foreach aliases. You
+                 * can overwrite these with the options for
+                 * the foreach control.
+                 */
+                public _aliases: IForEachAliasOptions;
+                /**
                  * The node length of the element's childNodes (innerHTML).
                  */
                 public _blockLength: number;
@@ -10024,6 +9987,10 @@ declare module plat {
                  * Removes any potentially held memory.
                  */
                 public dispose(): void;
+                /**
+                 * Sets the alias tokens to use for all the items in the foreach context array.
+                 */
+                public _setAliases(): void;
                 /**
                  * Adds an item to the control's element.
                  * @param {DocumentFragment} item The HTML fragment representing a single item
@@ -10120,6 +10087,47 @@ declare module plat {
                  * @param {string} key The animation key/type
                  */
                 private __handleAnimation(startNode, endNode, key);
+            }
+            /**
+             * The options object for the
+             * ForEach control.
+             */
+            interface IForEachOptions {
+                /**
+                 * Used to specify alternative alias tokens for the built-in foreach aliases.
+                 */
+                aliases: IForEachAliasOptions;
+            }
+            /**
+             * The alias tokens for the ForEach options object for the
+             * ForEach control.
+             */
+            interface IForEachAliasOptions extends IObject<string> {
+                /**
+                 * Used to specify an alternative alias for the index in a ForEach
+                 * item template.
+                 */
+                index: string;
+                /**
+                 * Used to specify an alternative alias for the even in a ForEach
+                 * item template.
+                 */
+                even: string;
+                /**
+                 * Used to specify an alternative alias for the odd in a ForEach
+                 * item template.
+                 */
+                odd: string;
+                /**
+                 * Used to specify an alternative alias for the first in a ForEach
+                 * item template.
+                 */
+                first: string;
+                /**
+                 * Used to specify an alternative alias for the last in a ForEach
+                 * item template.
+                 */
+                last: string;
             }
             /**
              * A TemplateControl for adding HTML to the
@@ -11550,10 +11558,9 @@ declare module plat {
              * or a route depending upon this navigator and event name.
              * @param {plat.navigation.IBaseNavigationOptions} options The
              * IBaseNavigationOptions used during navigation
-             * @param {boolean} cancelable Whether or not the event can be cancelled, preventing further navigation.
              * dispatch.
              */
-            public _sendEvent(name: string, target: any, type: string, parameter: any, options: IBaseNavigationOptions, cancelable: boolean): events.INavigationEvent<any>;
+            public _sendEvent(name: string, target: any, type: string, parameter: any, options: IBaseNavigationOptions): events.INavigationEvent<any>;
         }
         /**
          * Defines the methods that a type of navigator must implement.
@@ -13325,7 +13332,7 @@ declare module plat {
         /**
          * Registers a listener for a beforeNavigate event. The listener will be called when a beforeNavigate
          * event is propagating over the app. Any number of listeners can exist for a single event name.
-         * This event is cancelable using the ev.cancel() method,
+         * This event is cancelable using the ev.preventDefault() method,
          * and thereby preventing the navigation.
          * @param {string} name='beforeNavigate' The name of the event, cooinciding with the beforeNavigate event.
          * @param {(ev: plat.events.INavigationEvent<any>) => void} listener The method called when the beforeNavigate event is fired.
@@ -13334,7 +13341,7 @@ declare module plat {
         /**
          * Registers a listener for a navigating event. The listener will be called when a navigating
          * event is propagating over the app. Any number of listeners can exist for a single event name.
-         * This event is cancelable using the ev.cancel() method,
+         * This event is cancelable using the ev.preventDefault() method,
          * and thereby preventing the navigation.
          * @param {string} name='navigating' The name of the event, cooinciding with the navigating event.
          * @param {(ev: plat.events.INavigationEvent<any>) => void} listener The method called when the navigating
@@ -13458,7 +13465,7 @@ declare module plat {
         /**
          * Registers a listener for a beforeNavigate event. The listener will be called when a beforeNavigate
          * event is propagating over the app. Any number of listeners can exist for a single event name.
-         * This event is cancelable using the ev.cancel() method,
+         * This event is cancelable using the ev.preventDefault() method,
          * and thereby preventing the navigation.
          * @param {string} name='beforeNavigate' The name of the event, cooinciding with the beforeNavigate event.
          * @param {(ev: plat.events.INavigationEvent<any>) => void} listener The method called when the beforeNavigate event is fired.
@@ -13467,7 +13474,7 @@ declare module plat {
         /**
          * Registers a listener for a navigating event. The listener will be called when a navigating
          * event is propagating over the app. Any number of listeners can exist for a single event name.
-         * This event is cancelable using the ev.cancel() method,
+         * This event is cancelable using the ev.preventDefault() method,
          * and thereby preventing the navigation.
          * @param {string} name='navigating' The name of the event, cooinciding with the navigating event.
          * @param {(ev: plat.events.INavigationEvent<any>) => void} listener The method called when the navigating

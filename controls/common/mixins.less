@@ -1,3 +1,5 @@
+/// ============ Flexbox ==============
+
 .flexbox {
 	display: -webkit-box;
 	display: -moz-box;
@@ -11,4 +13,18 @@
 	-moz-align-items: @position;
 	-ms-align-items: @position;
 	align-items: @position;
+}
+
+.flex(@values) {
+	-webkit-box-flex: @values;
+	-moz-box-flex:  @values;
+	-webkit-flex:  @values;
+	-ms-flex:  @values;
+	flex:  @values;
+}
+
+.box-shadow(@values) {
+	-webkit-box-shadow: @values;
+	-moz-box-shadow: @values;
+	box-shadow: @values;
 }

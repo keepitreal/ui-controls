@@ -4,17 +4,26 @@
 	<meta charset="UTF-8">
 	<title>UI Controls</title>
 	<link rel="stylesheet" href="../main.css">
+	<link rel="stylesheet" href="../lib/platypusui/platypus.css">
 </head>
 <body>
 	<plat-viewport plat-options="{ defaultView: 'main' }"></plat-viewport>
 	
-	<!-- PlatypusTS -->
+	<!-- ts-bundle-start -->
+	
+	<!-- Platypus -->
 	<script src="../lib/platypus/platypus.js"></script>
+	<script src="../lib/platypusui/platypusui.js"></script>
 	
 	<!-- App -->
 	<script src="app.js"></script>
 
+	<!-- ViewControls -->
+	<script src="viewcontrols/main.viewcontrol.js"></script>
+
 	<!-- Controls -->
 	<script src="../controls/navbar/navbar.js"></script>
+
+	<!-- ts-bundle-end -->
 </body>
 </html>
